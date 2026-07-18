@@ -8,28 +8,28 @@ import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import modelo.Superficie;
-import modelo.Circulo;
-import modelo.Rectangulo;
-import modelo.Triangulo;
+import org.gregoryjeronimo.model.Superficie;
+import org.gregoryjeronimo.model.Circulo;
+import org.gregoryjeronimo.model.Rectangulo;
+import org.gregoryjeronimo.model.Triangulo;
 import java.util.ArrayList;
+
 /**
  *
  * @author Gregory Jeronimo
  */
-public class SuperficieView extends Aplication {
+public class SuperficieView extends Application {
     private ArrayList<Superficie> listaSuperficies = new ArrayList<>();
     
     private ListView<Superficie> listViewResumen = new ListView<>();
-    private Label lblTotalCosto = new Label("Total Cotización: Q.0.00");
+    private Label lblTotalCosto = new Label("Total Cosulta: Q.0.00");
 
-    private static final double PRECIO_METRO_CUADRADO = 50.00;
+    private static final double PRECIO_METRO_CUADRADO = 30.00;
 
     @Override
     public void start(Stage primaryStage) {
         primaryStage.setTitle("La Constructora - Cálculo de Materiales");
 
-     
         TabPane tabPane = new TabPane();
         Tab tabRegistro = new Tab("Registro");
         Tab tabResumen = new Tab("Resumen");
@@ -41,7 +41,7 @@ public class SuperficieView extends Aplication {
 
         Label lblSeleccion = new Label("Seleccione el tipo de superficie:");
         ComboBox<String> comboFormas = new ComboBox<>();
-        comboFormas.getItems().addAll("Circulo", "Rectangulo", "Triangulo");
+        comboFormas.getItems().addAll("Circulo", "Rectangulo", "Triangulo");       
         
         GridPane gridFormulario = new GridPane();
         gridFormulario.setHgap(10);
@@ -51,7 +51,7 @@ public class SuperficieView extends Aplication {
         TextField txtBase = new TextField();
         TextField txtAltura = new TextField();
 
-       
+        // Evento para cambiar dinámicamente el formulario
         comboFormas.setOnAction(e -> {
             gridFormulario.getChildren().clear();
             String seleccion = comboFormas.getValue();
@@ -65,10 +65,11 @@ public class SuperficieView extends Aplication {
                 gridFormulario.add(new Label("Altura (m):"), 0, 1);
                 gridFormulario.add(txtAltura, 1, 1);
             }
-            });
-Button btnAgregar = new Button("Añadir a la Lista");
+        });
+
+        Button btnAgregar = new Button("Añadir a la Lista");
         
-        // Evento para agregar objetos a la lista con validación Try-Catch
+        // ¡CORRECCIÓN AQUÍ! Ahora todo este bloque pertenece al evento clic del botón
         btnAgregar.setOnAction(e -> {
             String seleccion = comboFormas.getValue();
             if (seleccion == null) {
@@ -90,17 +91,75 @@ Button btnAgregar = new Button("Añadir a la Lista");
                     listaSuperficies.add(new Triangulo(base, altura));
                 }
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+                txtRadio.clear();
+                txtBase.clear();
+                txtAltura.clear();
+                actualizarListView();
+                mostrarAlerta("Éxito", "Superficie añadida correctamente.");
+
+            } catch (NumberFormatException ex) {
+                mostrarAlerta("Error de formato", "Por favor, ingrese valores numéricos válidos.");
+            } 
+        });
+
+        rootRegistro.getChildren().addAll(lblSeleccion, comboFormas, gridFormulario, btnAgregar);
+        tabRegistro.setContent(rootRegistro);
+
+        // --- PESTAÑA 2: RESUMEN ---
+        VBox rootResumen = new VBox(15);
+        rootResumen.setPadding(new Insets(20));
+
+        Button btnCalcular = new Button("Calcular Total");
+        btnCalcular.setStyle("-fx-font-weight: bold;");
+
+        // Lógica de negocio: Calcular áreas y multiplicar por el precio base (Q.50.00)
+        btnCalcular.setOnAction(e -> {
+            double areaTotal = 0;
+            for (Superficie s : listaSuperficies) {
+                areaTotal += s.calcularArea(); // Polimorfismo en acción
+            }
+            double costoTotal = areaTotal * PRECIO_METRO_CUADRADO;
+            lblTotalCosto.setText(String.format("Total Consulta: Q.%,.2f", costoTotal));
+        });
+
+        rootResumen.getChildren().addAll(new Label("Elementos registrados:"), listViewResumen, btnCalcular, lblTotalCosto);
+        tabResumen.setContent(rootResumen);
+
+        // Configuración final de la Escena
+        tabPane.getTabs().addAll(tabRegistro, tabResumen);
+        Scene scene = new Scene(tabPane, 450, 600);
+        primaryStage.setScene(scene);
+        primaryStage.show();
     }
+
+    // Refresca visualmente el ListView en el Tab de Resumen
+    private void actualizarListView() {
+        listViewResumen.getItems().clear();
+        listViewResumen.getItems().addAll(listaSuperficies);
+    }
+
+    // Método auxiliar para lanzar ventanas de información/error
+    private void mostrarAlerta(String titulo, String mensaje) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(titulo);
+        alert.setHeaderText(null);
+        alert.setContentText(mensaje);
+        alert.showAndWait();
+    }
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+}
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
