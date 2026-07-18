@@ -46,4 +46,39 @@ public class SuperficieView extends Aplication {
         GridPane gridFormulario = new GridPane();
         gridFormulario.setHgap(10);
         gridFormulario.setVgap(10);
-}
+        
+        TextField txtRadio = new TextField();
+        TextField txtBase = new TextField();
+        TextField txtAltura = new TextField();
+
+       
+        comboFormas.setOnAction(e -> {
+            gridFormulario.getChildren().clear();
+            String seleccion = comboFormas.getValue();
+
+            if ("Circulo".equals(seleccion)) {
+                gridFormulario.add(new Label("Radio (m):"), 0, 0);
+                gridFormulario.add(txtRadio, 1, 0);
+            } else if ("Rectangulo".equals(seleccion) || "Triangulo".equals(seleccion)) {
+                gridFormulario.add(new Label("Base (m):"), 0, 0);
+                gridFormulario.add(txtBase, 1, 0);
+                gridFormulario.add(new Label("Altura (m):"), 0, 1);
+                gridFormulario.add(txtAltura, 1, 1);
+            }
+        });
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    }
