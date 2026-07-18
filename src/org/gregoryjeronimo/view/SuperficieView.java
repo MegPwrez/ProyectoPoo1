@@ -65,8 +65,30 @@ public class SuperficieView extends Aplication {
                 gridFormulario.add(new Label("Altura (m):"), 0, 1);
                 gridFormulario.add(txtAltura, 1, 1);
             }
-        });
+            });
+Button btnAgregar = new Button("Añadir a la Lista");
+        
+        // Evento para agregar objetos a la lista con validación Try-Catch
+        btnAgregar.setOnAction(e -> {
+            String seleccion = comboFormas.getValue();
+            if (seleccion == null) {
+                mostrarAlerta("Error", "Por favor, seleccione una forma geométrica.");
+                return;
+            }
 
+            try {
+                if ("Circulo".equals(seleccion)) {
+                    double radio = Double.parseDouble(txtRadio.getText());
+                    listaSuperficies.add(new Circulo(radio));
+                } else if ("Rectangulo".equals(seleccion)) {
+                    double base = Double.parseDouble(txtBase.getText());
+                    double altura = Double.parseDouble(txtAltura.getText());
+                    listaSuperficies.add(new Rectangulo(base, altura));
+                } else if ("Triangulo".equals(seleccion)) {
+                    double base = Double.parseDouble(txtBase.getText());
+                    double altura = Double.parseDouble(txtAltura.getText());
+                    listaSuperficies.add(new Triangulo(base, altura));
+                }
     
     
     
